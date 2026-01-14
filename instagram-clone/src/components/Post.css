@@ -1,0 +1,270 @@
+.post {
+  background-color: #ffffff;
+  border: 1px solid #dbdbdb;
+  border-radius: 0;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+/* 헤더 */
+.post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  min-height: 60px;
+}
+
+.post-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-image {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.username {
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  cursor: pointer;
+}
+
+.username:hover {
+  color: #8e8e8e;
+}
+
+.post-header-right {
+  cursor: pointer;
+}
+
+.more-options {
+  font-size: 20px;
+  color: #262626;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 8px;
+  margin: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* 이미지 */
+.post-image-container {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.post-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 액션 버튼 */
+.post-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 16px;
+  min-height: 48px;
+}
+
+.post-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.post-actions-right {
+  display: flex;
+  align-items: center;
+}
+
+.like-button,
+.comment-button,
+.share-button,
+.save-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  margin: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.like-button:hover,
+.comment-button:hover,
+.share-button:hover,
+.save-button:hover {
+  opacity: 0.7;
+}
+
+.like-button:active,
+.comment-button:active,
+.share-button:active,
+.save-button:active {
+  opacity: 0.5;
+}
+
+.like-button .icon,
+.comment-button .icon,
+.share-button .icon,
+.save-button .icon {
+  width: 24px;
+  height: 24px;
+  color: #262626;
+}
+
+.like-button.liked .icon {
+  animation: heartBeat 0.3s;
+}
+
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* 좋아요 수 */
+.post-likes {
+  padding: 0 16px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #262626;
+  line-height: 18px;
+}
+
+.post-likes strong {
+  font-weight: 600;
+}
+
+/* 캡션 */
+.post-caption {
+  padding: 0 16px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #262626;
+  line-height: 18px;
+}
+
+.post-caption strong {
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+/* 댓글 */
+.post-comments-preview {
+  padding: 0 16px;
+  margin-bottom: 4px;
+}
+
+.view-comments-btn {
+  background: none;
+  border: none;
+  color: #8e8e8e;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+.view-comments-btn:hover {
+  color: #262626;
+}
+
+.post-comments {
+  padding: 0 16px;
+  margin-bottom: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.comment {
+  font-size: 14px;
+  color: #262626;
+  margin-bottom: 8px;
+  line-height: 18px;
+}
+
+.comment strong {
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+/* 댓글 입력 */
+.comment-form {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-top: 1px solid #efefef;
+  min-height: 56px;
+}
+
+.comment-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #262626;
+  background: transparent;
+  padding: 0;
+  height: 18px;
+  line-height: 18px;
+}
+
+.comment-input::placeholder {
+  color: #8e8e8e;
+}
+
+.comment-submit {
+  background: none;
+  border: none;
+  color: #0095f6;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 16px;
+  opacity: 0.3;
+  transition: opacity 0.2s;
+}
+
+.comment-submit.active {
+  opacity: 1;
+}
+
+.comment-submit.active:hover {
+  opacity: 0.7;
+}
+
+/* 타임스탬프 */
+.post-timestamp {
+  padding: 0 16px 12px;
+  font-size: 10px;
+  color: #8e8e8e;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  line-height: 12px;
+}
+
+@media (max-width: 768px) {
+  .post {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+  }
+}
