@@ -1,0 +1,24 @@
+.memo-card {
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.memo-card .card-title {
+  color: #333;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.memo-card .card-text {
+  line-height: 1.8;
+  word-break: break-word;
+}
+
+.btn-group .btn {
+  border-radius: 6px !important;
+}
+
+/* Bootstrap Icons 스타일링 */
+.bi {
+  vertical-align: -0.125em;
+}
