@@ -1,6 +1,7 @@
 .memo-card {
   background: white;
   transition: all 0.3s ease;
+  border-left: 4px solid transparent;
 }
 
 .memo-card .card-title {
@@ -21,4 +22,75 @@
 /* Bootstrap Icons 스타일링 */
 .bi {
   vertical-align: -0.125em;
+}
+
+/* 메모 색상 스타일 */
+.memo-color-default {
+  border-left-color: #dee2e6;
+  background: #ffffff;
+}
+
+.memo-color-yellow {
+  border-left-color: #ffc107;
+  background: #fffbf0;
+}
+
+.memo-color-green {
+  border-left-color: #28a745;
+  background: #f0f9f4;
+}
+
+.memo-color-blue {
+  border-left-color: #007bff;
+  background: #f0f7ff;
+}
+
+.memo-color-pink {
+  border-left-color: #e91e63;
+  background: #fef5f9;
+}
+
+.memo-color-purple {
+  border-left-color: #6f42c1;
+  background: #f8f5ff;
+}
+
+/* 색상 선택기 스타일 */
+.color-picker {
+  border: 1px solid #dee2e6;
+}
+
+.color-option {
+  min-width: 100px;
+  transition: all 0.2s;
+}
+
+.color-option:hover {
+  transform: scale(1.05);
+}
+
+/* 색상 옵션 미리보기 */
+.color-option.memo-color-yellow {
+  background-color: #fffbf0;
+  border-color: #ffc107;
+}
+
+.color-option.memo-color-green {
+  background-color: #f0f9f4;
+  border-color: #28a745;
+}
+
+.color-option.memo-color-blue {
+  background-color: #f0f7ff;
+  border-color: #007bff;
+}
+
+.color-option.memo-color-pink {
+  background-color: #fef5f9;
+  border-color: #e91e63;
+}
+
+.color-option.memo-color-purple {
+  background-color: #f8f5ff;
+  border-color: #6f42c1;
 }
