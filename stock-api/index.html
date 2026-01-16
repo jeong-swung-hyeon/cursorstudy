@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한국 주식 가격 순위 대시보드</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .date-input {
+            padding: 10px 15px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .error {
+            text-align: center;
+            padding: 30px;
+            background: #fee;
+            color: #c33;
+            margin: 20px;
+            border-radius: 8px;
+            border: 2px solid #fcc;
+            white-space: pre-line;
+            line-height: 1.6;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px 30px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            padding: 20px 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .rank {
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            width: 60px;
+        }
+
+        .stock-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .market {
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .market.kospi {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .market.kosdaq {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .market.konex {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #333;
+            text-align: right;
+        }
+
+        .change {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .change.positive {
+            color: #d32f2f;
+        }
+
+        .change.negative {
+            color: #1976d2;
+        }
+
+        .change.neutral {
+            color: #666;
+        }
+
+        .volume, .market-cap {
+            text-align: right;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📈 한국 주식 가격 순위</h1>
+            <p>종가 기준 상위 50개 주식 정보</p>
+        </div>
+
+        <div class="controls">
+            <div>
+                <label for="dateInput" style="margin-right: 10px; font-weight: 600;">기준일자:</label>
+                <input type="date" id="dateInput" class="date-input" />
+            </div>
+            <button id="loadBtn" class="btn">데이터 불러오기</button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            데이터를 불러오는 중...
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="stats" class="stats" style="display: none;"></div>
+
+        <div class="table-container">
+            <table id="stockTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th class="rank">순위</th>
+                        <th>종목명</th>
+                        <th>시장구분</th>
+                        <th class="price">종가</th>
+                        <th class="change">대비</th>
+                        <th class="change">등락률</th>
+                        <th class="volume">거래량</th>
+                        <th class="market-cap">시가총액</th>
+                    </tr>
+                </thead>
+                <tbody id="stockTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = 'bbd0250173ddcb4053537eb4851ccb28fc3e9d694cf86a3a2192fe5b1c9a5abb';
+        const BASE_URL = 'https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo';
+
+        // 오늘 날짜를 기본값으로 설정
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        document.getElementById('dateInput').value = todayStr;
+
+        // 숫자 포맷팅 함수
+        function formatNumber(num) {
+            if (!num) return '0';
+            return parseInt(num).toLocaleString('ko-KR');
+        }
+
+        // 시가총액 포맷팅 (억원 단위)
+        function formatMarketCap(num) {
+            if (!num) return '0';
+            const amount = parseInt(num);
+            if (amount >= 100000000) {
+                return (amount / 100000000).toFixed(1) + '억';
+            }
+            return formatNumber(amount);
+        }
+
+        // 등락률 포맷팅
+        function formatChangeRate(rate) {
+            if (!rate) return '0.00%';
+            const num = parseFloat(rate);
+            return (num >= 0 ? '+' : '') + num.toFixed(2) + '%';
+        }
+
+        // API 호출 함수 (서버 프록시 사용)
+        async function fetchStockDataViaServer(date, pageNo = 1, numOfRows = 1000) {
+            const dateStr = date.replace(/-/g, '');
+            const url = `http://localhost:8000/api/stock?date=${dateStr}&pageNo=${pageNo}&numOfRows=${numOfRows}`;
+            
+            try {
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.response && data.response.header) {
+                    if (data.response.header.resultCode !== '00') {
+                        throw new Error(data.response.header.resultMsg || 'API 호출 실패');
+                    }
+                    return data.response.body;
+                }
+                
+                if (data.body) {
+                    return data.body;
+                }
+                
+                throw new Error('예상하지 못한 응답 형식');
+            } catch (error) {
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    throw new Error('서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.\n\n서버 실행 방법:\n1. start_server.bat 파일을 더블클릭하거나\n2. 터미널에서 "python server.py" 명령을 실행하세요.');
+                }
+                throw error;
+            }
+        }
+
+        // API 직접 호출 함수 (CORS 프록시 사용)
+        async function fetchStockDataDirect(date, pageNo = 1, numOfRows = 1000) {
+            const dateStr = date.replace(/-/g, '');
+            // CORS 프록시를 통한 직접 호출 시도
+            const apiUrl = `${BASE_URL}?serviceKey=${encodeURIComponent(API_KEY)}&numOfRows=${numOfRows}&pageNo=${pageNo}&resultType=json&basDt=${dateStr}`;
+            
+            // 여러 CORS 프록시 시도
+            const corsProxies = [
+                '', // 직접 호출 시도
+                'https://cors-anywhere.herokuapp.com/',
+                'https://api.allorigins.win/raw?url=',
+            ];
+            
+            for (const proxy of corsProxies) {
+                try {
+                    let url = proxy + apiUrl;
+                    if (proxy === 'https://api.allorigins.win/raw?url=') {
+                        url = proxy + encodeURIComponent(apiUrl);
+                    }
+                    
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        continue; // 다음 프록시 시도
+                    }
+                    
+                    let data;
+                    if (proxy === 'https://api.allorigins.win/raw?url=') {
+                        const text = await response.text();
+                        data = JSON.parse(text);
+                    } else {
+                        data = await response.json();
+                    }
+                    
+                    if (data.response && data.response.header) {
+                        if (data.response.header.resultCode !== '00') {
+                            throw new Error(data.response.header.resultMsg || 'API 호출 실패');
+                        }
+                        return data.response.body;
+                    }
+                    
+                    throw new Error('예상하지 못한 응답 형식');
+                } catch (error) {
+                    // 마지막 프록시도 실패하면 에러 던지기
+                    if (proxy === corsProxies[corsProxies.length - 1]) {
+                        throw error;
+                    }
+                    continue;
+                }
+            }
+        }
+
+        // API 호출 함수 (자동으로 서버 또는 직접 호출 선택)
+        async function fetchStockData(date, pageNo = 1, numOfRows = 1000) {
+            // 먼저 서버를 통해 시도
+            try {
+                return await fetchStockDataViaServer(date, pageNo, numOfRows);
+            } catch (serverError) {
+                // 서버 연결 실패 시 직접 호출 시도
+                if (serverError.message.includes('서버에 연결할 수 없습니다')) {
+                    try {
+                        return await fetchStockDataDirect(date, pageNo, numOfRows);
+                    } catch (directError) {
+                        // 둘 다 실패하면 서버 필요 메시지와 함께 에러
+                        throw new Error(`${serverError.message}\n\n직접 API 호출도 실패했습니다: ${directError.message}`);
+                    }
+                }
+                throw serverError;
+            }
+        }
+
+        // 모든 데이터 가져오기 (페이지네이션 처리)
+        async function fetchAllStockData(date) {
+            let allItems = [];
+            let pageNo = 1;
+            let totalCount = 0;
+            const numOfRows = 1000;
+
+            try {
+                // 첫 페이지로 전체 개수 확인
+                const firstPage = await fetchStockData(date, 1, numOfRows);
+                totalCount = parseInt(firstPage.totalCount);
+                
+                if (firstPage.items && firstPage.items.item) {
+                    const items = Array.isArray(firstPage.items.item) 
+                        ? firstPage.items.item 
+                        : [firstPage.items.item];
+                    allItems = allItems.concat(items);
+                }
+
+                // 나머지 페이지 가져오기
+                const totalPages = Math.ceil(totalCount / numOfRows);
+                for (pageNo = 2; pageNo <= totalPages; pageNo++) {
+                    const pageData = await fetchStockData(date, pageNo, numOfRows);
+                    if (pageData.items && pageData.items.item) {
+                        const items = Array.isArray(pageData.items.item) 
+                            ? pageData.items.item 
+                            : [pageData.items.item];
+                        allItems = allItems.concat(items);
+                    }
+                }
+
+                return allItems;
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        // 데이터 표시 함수
+        function displayStockData(stocks) {
+            // 종가 기준으로 정렬 (내림차순)
+            const sortedStocks = stocks
+                .filter(stock => stock.clpr && parseFloat(stock.clpr) > 0)
+                .sort((a, b) => parseFloat(b.clpr) - parseFloat(a.clpr))
+                .slice(0, 50);
+
+            // 통계 정보 표시
+            const statsDiv = document.getElementById('stats');
+            const totalStocks = stocks.length;
+            const validStocks = stocks.filter(s => s.clpr && parseFloat(s.clpr) > 0).length;
+            const avgPrice = sortedStocks.reduce((sum, s) => sum + parseFloat(s.clpr), 0) / sortedStocks.length;
+            const totalMarketCap = sortedStocks.reduce((sum, s) => sum + parseFloat(s.mrktTotAmt || 0), 0);
+
+            statsDiv.innerHTML = `
+                <div class="stat-card">
+                    <h3>전체 종목 수</h3>
+                    <div class="value">${formatNumber(totalStocks)}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>유효 종목 수</h3>
+                    <div class="value">${formatNumber(validStocks)}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>상위 50개 평균 종가</h3>
+                    <div class="value">${formatNumber(Math.round(avgPrice))}원</div>
+                </div>
+                <div class="stat-card">
+                    <h3>상위 50개 총 시가총액</h3>
+                    <div class="value">${formatMarketCap(totalMarketCap)}</div>
+                </div>
+            `;
+            statsDiv.style.display = 'grid';
+
+            // 테이블 표시
+            const tbody = document.getElementById('stockTableBody');
+            tbody.innerHTML = '';
+
+            sortedStocks.forEach((stock, index) => {
+                const row = document.createElement('tr');
+                const clpr = parseFloat(stock.clpr || 0);
+                const vs = parseFloat(stock.vs || 0);
+                const fltRt = parseFloat(stock.fltRt || 0);
+                const changeClass = vs > 0 ? 'positive' : vs < 0 ? 'negative' : 'neutral';
+                const marketClass = (stock.mrktCtg || '').toLowerCase();
+
+                row.innerHTML = `
+                    <td class="rank">${index + 1}</td>
+                    <td class="stock-name">${stock.itmsNm || '-'}</td>
+                    <td><span class="market ${marketClass}">${stock.mrktCtg || '-'}</span></td>
+                    <td class="price">${formatNumber(clpr)}원</td>
+                    <td class="change ${changeClass}">${vs >= 0 ? '+' : ''}${formatNumber(vs)}</td>
+                    <td class="change ${changeClass}">${formatChangeRate(fltRt)}</td>
+                    <td class="volume">${formatNumber(stock.trqu || 0)}</td>
+                    <td class="market-cap">${formatMarketCap(stock.mrktTotAmt || 0)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('stockTable').style.display = 'table';
+        }
+
+        // 데이터 로드 함수
+        async function loadData() {
+            const dateInput = document.getElementById('dateInput');
+            const date = dateInput.value;
+
+            if (!date) {
+                alert('날짜를 선택해주세요.');
+                return;
+            }
+
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            const loadBtn = document.getElementById('loadBtn');
+            const statsDiv = document.getElementById('stats');
+            const table = document.getElementById('stockTable');
+
+            // UI 초기화
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            statsDiv.style.display = 'none';
+            table.style.display = 'none';
+            loadBtn.disabled = true;
+
+            try {
+                const stocks = await fetchAllStockData(date);
+                displayStockData(stocks);
+            } catch (error) {
+                let errorMessage = `오류 발생: ${error.message}`;
+                
+                // 서버 연결 오류인 경우 추가 안내
+                if (error.message.includes('서버에 연결할 수 없습니다')) {
+                    errorMessage += '\n\n💡 해결 방법:\n1. start_server.bat 파일을 실행하거나\n2. 터미널에서 "python server.py" 명령을 실행하세요.\n3. 서버가 실행되면 이 페이지를 새로고침하세요.';
+                }
+                
+                errorDiv.textContent = errorMessage;
+                errorDiv.style.display = 'block';
+            } finally {
+                loadingDiv.style.display = 'none';
+                loadBtn.disabled = false;
+            }
+        }
+
+        // 서버 상태 확인
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('http://localhost:8000/health', {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(2000) // 2초 타임아웃
+                });
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        // 이벤트 리스너
+        document.getElementById('loadBtn').addEventListener('click', loadData);
+
+        // 페이지 로드 시 서버 상태 확인 및 자동으로 데이터 불러오기
+        window.addEventListener('load', async () => {
+            // 주말이면 이전 평일로 설정
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            if (dayOfWeek === 0) { // 일요일
+                today.setDate(today.getDate() - 2);
+            } else if (dayOfWeek === 6) { // 토요일
+                today.setDate(today.getDate() - 1);
+            }
+            const dateStr = today.toISOString().split('T')[0];
+            document.getElementById('dateInput').value = dateStr;
+            
+            // 서버 상태 확인
+            const serverRunning = await checkServerStatus();
+            if (!serverRunning) {
+                const errorDiv = document.getElementById('error');
+                errorDiv.textContent = '⚠️ 서버가 실행되지 않았습니다.\n\n서버를 실행하려면:\n1. start_server.bat 파일을 더블클릭하거나\n2. 터미널에서 "python server.py" 명령을 실행하세요.\n\n서버 실행 후 이 페이지를 새로고침하세요.';
+                errorDiv.style.display = 'block';
+            } else {
+                // 서버가 실행 중이면 자동 로드
+                loadData();
+            }
+        });
+    </script>
+</body>
+</html>
