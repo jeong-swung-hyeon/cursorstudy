@@ -1,4 +1,80 @@
-# Getting Started with Create React App
+# 메모 앱 (Memo App)
+
+부트스트랩으로 디자인된 React 메모 앱입니다. 메모를 생성, 수정, 삭제, 검색할 수 있습니다.
+
+## 주요 기능
+
+- ✨ 새 메모 생성 (즉시 수정 모드)
+- ✏️ 메모 수정
+- 💾 메모 저장
+- 🗑️ 메모 삭제
+- 🔍 메모 검색
+- 💾 로컬 스토리지 자동 저장
+
+## Vercel 배포 가이드
+
+### 방법 1: GitHub 연동 (권장)
+
+1. **GitHub에 프로젝트 푸시**
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin <your-github-repo-url>
+   git push -u origin main
+   ```
+
+2. **Vercel에 배포**
+   - [Vercel](https://vercel.com)에 접속하여 로그인
+   - "Add New Project" 클릭
+   - GitHub 저장소 선택
+   - 프로젝트 설정:
+     - **Framework Preset**: Create React App
+     - **Build Command**: `npm run build`
+     - **Output Directory**: `build`
+     - **Install Command**: `npm install`
+   - "Deploy" 클릭
+
+3. **자동 배포**
+   - 이후 GitHub에 푸시할 때마다 자동으로 배포됩니다.
+
+### 방법 2: Vercel CLI 사용
+
+1. **Vercel CLI 설치**
+   ```bash
+   npm install -g vercel
+   ```
+
+2. **로그인**
+   ```bash
+   vercel login
+   ```
+
+3. **배포**
+   ```bash
+   vercel
+   ```
+   - 첫 배포 시 설정 질문에 답변:
+     - Set up and deploy? **Y**
+     - Which scope? (계정 선택)
+     - Link to existing project? **N**
+     - Project name? (프로젝트 이름 입력)
+     - Directory? **./**
+     - Override settings? **N**
+
+4. **프로덕션 배포**
+   ```bash
+   vercel --prod
+   ```
+
+### 빌드 설정 확인
+
+프로젝트에는 `vercel.json` 파일이 포함되어 있어 자동으로 올바른 설정이 적용됩니다:
+- Build Command: `npm run build`
+- Output Directory: `build`
+- SPA 라우팅 지원
+
+---
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
